@@ -23,7 +23,7 @@ function App() {
     <section>
       <h1>Application running</h1>
       <h3>Name : {name}</h3>
-      <p>Laxmiputra</p>
+      <p>Laxmiputra Basavannappa Uppar</p>
     </section>
   );
 }
