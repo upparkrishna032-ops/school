@@ -63,3 +63,54 @@ jobs:
       - name: Run Tests
         run: |
           echo "✅ Tests passed successfully!"
+
+  # ========================================================
+  # DEPLOY STAGE
+  # ========================================================
+  deploy:
+    name: Deploy to VPS
+    needs: [build, test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build_output
+          path: .
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add VPS to Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 72.61.226.104 >> ~/.ssh/known_hosts
+
+      - name: Create target folders on VPS
+        run: |
+          ssh root@72.61.226.104"
+            mkdir -p /var/www/school/frontend/dist
+            mkdir -p /var/www/school/backend
+          "
+
+      - name: Upload Frontend
+        run: |
+          rsync -avz --delete ./frontend/dist/ root@72.61.226.104:/var/www/school/frontend/dist/
+
+      - name: Upload Backend
+        run: |
+
+
+          rsync -avz --delete --exclude="node_modules" --exclude=".env" ./backend/ root@72.61.226.104:/var/www/school/backend/
+
+      - name: Restart Server Services
+        run: |
+          ssh root@72.61.226.104"
+            cd /var/www/school/backend
+            npm install --production
+            pm2 reload all
+            sudo systemctl restart nginx
+          "
