@@ -91,7 +91,7 @@ jobs:
 
       - name: Create target folders on VPS
         run: |
-          ssh root@72.61.226.104"
+          ssh root@72.61.226.104 "
             mkdir -p /var/www/school/frontend/dist
             mkdir -p /var/www/school/backend
           "
@@ -108,7 +108,7 @@ jobs:
 
       - name: Restart Server Services
         run: |
-          ssh root@72.61.226.104"
+          ssh root@72.61.226.104 "
             cd /var/www/school/backend
             npm install --production
             pm2 reload all
